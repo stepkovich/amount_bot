@@ -1,5 +1,5 @@
 services:
-  assist:
+  amountbot:
     build:
       context: ./
     restart: always
