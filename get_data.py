@@ -1,15 +1,18 @@
+import os
+
 import requests
-from config import LOGIN, PASWORD
-from pprint import pprint
+from dotenv import load_dotenv
+
+load_dotenv()
+
+LOG = os.getenv("LOGIN")
+PASW = os.getenv("PASWORD")
 
 
-def get_info(artt):
-    # r = requests.get(f'https://lk.iek.ru/api/products?format=jsonp&art=MRD10-16', auth=(LOGIN, PASWORD))
-    # print(r)
-
+def get_info(artic):
     try:
         # get info product
-        r = requests.get(f'https://lk.iek.ru/api/products?format=jsonp&art={artt}', auth=(LOGIN, PASWORD))
+        r = requests.get(f'https://lk.iek.ru/api/products?format=jsonp&art={artic}', auth=(LOG, PASW))
         product = r.json()[0]
 
         art = product['art']
@@ -18,7 +21,7 @@ def get_info(artt):
         price = round(product['price'] / 1.2, 2)
 
         # get amount product
-        r = requests.get(f'https://lk.iek.ru/api/residues/json/?sku={artt}', auth=(LOGIN, PASWORD))
+        r = requests.get(f'https://lk.iek.ru/api/residues/json/?sku={artic}', auth=(LOG, PASW))
         amount = r.json()
 
         stores = amount['stores']
@@ -31,18 +34,19 @@ def get_info(artt):
         column_stor = '\n'.join(stor)
 
         return (
-            f'Артикул:  {art}\n\nНазвание:   {name}\n\nБренд:   {brand}\n\nЦена:   {price} базовая без НДС\n\nНаличие: \n{column_stor}')
+            f'Артикул:  {art}\n\nНазвание:   {name}\n\nБренд:   {brand}\n\nЦена:   {price} базовая без '
+            f'НДС\n\nНаличие: \n{column_stor}')
 
     except:
 
-        return ("Что-то не так!\nПроверьте артикул...")
+        return "Что-то не так!\nПроверьте артикул..."
 
 
-def get_sertificats(artt):
+def get_sertificats(artic):
     try:
         # get info product
-        r = requests.get(f'https://lk.iek.ru/api/products?format=jsonp&art={artt}&entity=Certificates',
-                         auth=(LOGIN, PASWORD))
+        r = requests.get(f'https://lk.iek.ru/api/products?format=jsonp&art={artic}&entity=Certificates',
+                         auth=(LOG, PASW))
         serts = r.json()[0]["Certificates"]
 
         info_sert = []
@@ -53,16 +57,16 @@ def get_sertificats(artt):
         column_sert = '\n'.join(info_sert)
 
         # return(f'\n{"-"*30}\n{name_sert}\n{url_sert}\n{"-"*30}')
-        return (column_sert)
+        return column_sert
 
 
     except:
-        return ("Что-то не так!\nПроверьте артикул...")
+        return "Что-то не так!\nПроверьте артикул..."
 
 
-def get_analog(artt):
+def get_analog(artic):
     try:
-        r = requests.get(f'https://lk.iek.ru/api/products?format=jsonp&art={artt}&entity=Analog', auth=(LOGIN, PASWORD))
+        r = requests.get(f'https://lk.iek.ru/api/products?format=jsonp&art={artic}&entity=Analog', auth=(LOG, PASW))
         analogs = r.json()[0]["Analog"]
 
         info_analog = []
@@ -82,7 +86,7 @@ def get_analog(artt):
 
         column_analog = '\n'.join(info_analog)
 
-        return (column_analog)
+        return column_analog
 
     except:
-        return ("Нет информации")
+        return "Нет информации"
