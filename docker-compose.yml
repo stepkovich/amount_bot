@@ -1,0 +1,5 @@
+services:
+  assist:
+    build:
+      context: ./
+    restart: always
