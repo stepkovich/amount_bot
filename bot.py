@@ -1,62 +1,42 @@
 import os
 from dotenv import load_dotenv
-from aiogram import Bot, Dispatcher, types, executor
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from get_data import get_info, get_sertificats, get_analog
+from aiogram import Bot, Dispatcher, types, F
+import asyncio
+from aiogram.filters import Command
+from get_data import get_info_async
 
 load_dotenv()
 
 bot = Bot(token=os.getenv("TOKEN"))
-dp = Dispatcher(bot)
-
-artt = {"chat": "",
-        "massage": ""}
+dp = Dispatcher()
 
 
 def start():
     print('Bot starting')
 
 
-@dp.message_handler(commands=['start'])
+@dp.message(Command('start'))
 async def start_command(message: types.Message):
     await message.answer("Введите артикул:")
 
 
-@dp.message_handler()
-async def get_article_data(message: types.Message):
-    # global artt
-    m = message.text.upper()
-    id_chat = message.chat.id
-    inf = {"chat": id_chat,
-           "massage": m}
-    artt.update(inf)
-    # print(artt.get("massage"))
-    ikb = InlineKeyboardMarkup(row_width=2)
-    b1 = InlineKeyboardButton(text="Цена и наличие", callback_data="info")
-    b2 = InlineKeyboardButton(text="Сертификаты", callback_data="sert")
-    b3 = InlineKeyboardButton(text="Аналоги", callback_data="analog")
-    ikb.add(b1, b2, b3)
-    await message.reply("Какая информация необходима?", reply_markup=ikb)
+@dp.message(F.text)
+async def get_article(message: types.Message):
+    article = message.text.upper()
+    api_answer = await get_info_async(article)
+    await message.answer(api_answer)
 
 
-@dp.callback_query_handler(text="info")
-async def sew(call: types.CallbackQuery):
-    await call.answer()
-    await call.message.answer(get_info(artt.get("massage")), )
+
+@dp.message()
+async def err(message: types.Message):
+    await message.answer("Хммм, на артикул не похоже")
 
 
-@dp.callback_query_handler(text="sert")
-async def sew(call: types.CallbackQuery):
-    await call.answer()
-    await call.message.answer(get_sertificats(artt.get("massage")))
-
-
-@dp.callback_query_handler(text="analog")
-async def sew(call: types.CallbackQuery):
-    await call.answer()
-    await call.message.answer(f'Аналоги для: -----> {artt}\n{get_analog(artt)}')
+async def main():
+    await dp.start_polling(bot, skip_updates=True)
 
 
 if __name__ == '__main__':
     start()
-    executor.start_polling(dp, skip_updates=True)
+    asyncio.run(main())
