@@ -9,7 +9,7 @@ load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
 print(f"=== ОТЛАДКА: Длина токена: {len(TOKEN) if TOKEN else 0} ===")
-print(f"=== ОТЛАДКА: Сам токен: [{TOKEN}] ===")
+print(f"=== ОТЛАДКА: Сам токен: [{TOKEN}] ==//=")
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
