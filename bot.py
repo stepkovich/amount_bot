@@ -12,7 +12,7 @@ dp = Dispatcher()
 
 
 def start():
-    print('Bot starting V2 - NEW TOKEN!')
+    print('Bot starting')
 
 
 @dp.message(Command('start'))
