@@ -2,4 +2,6 @@ services:
   amountbot:
     build:
       context: ./
+      env_file:
+        - .env
     restart: always
